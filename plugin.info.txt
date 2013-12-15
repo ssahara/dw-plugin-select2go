@@ -1,0 +1,7 @@
+base   select2
+author Satoshi Sahara
+email  sahara.satoshi@gmail.com
+date   2013-12-16
+name   Select2 plugin
+desc   Page menu select box enhanced by jQuery Select2
+url    https://www.dokuwiki.org/plugin:select2
