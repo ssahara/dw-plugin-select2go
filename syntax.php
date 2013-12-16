@@ -50,22 +50,22 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
     public function handle($match, $state, $pos) {
         global $ID;
 
-        if (preg_match('/^<select2 /',$match)) {
+        $param = array();
+        if (preg_match('/^.select2 /',$match)) {
             // markup was <select2 ...>...</select2>
             $param['useSelect2'] = true;
-            $match = substr($match, 8, -10);  // strip markup
+            $match = substr($match, 9, -10); // strip markup
         } else {
             // markup was <select ...>...</select>
-            $match = substr($match, 7, -9);  // strip markup
+            $match = substr($match, 8, -9);  // strip markup
         }
         list($params, $match) = explode('>', $match, 2);
         $items = explode("\n", trim($match,"\n"));
 
         // parameters for select tag
         $tokens = preg_split('/\s+/', $params);
-        $param = array();
         $param['size'] = 1; // <select size="1"></select>
-        if (empty($param['useSelect2']) {
+        if (empty($param['useSelect2'])) {
             $param['useSelect2'] = $this->getConf('force_select2');
         }
 
@@ -128,8 +128,8 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
                     'group'    => $optgroup,
                     'id'       => $id,
                     'title'    => $title,
-                    'selected' => false,
-                    'disabled' => false,
+                    'selected' => $selected,
+                    'disabled' => $disabled,
                 );
             }
         }
