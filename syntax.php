@@ -8,27 +8,26 @@
  *
  * Select2 is a jQuery based replacement for select boxes
  * coded by Igor Vaynberg.
+ * Licenced under the Apache Software Foundation License v2.0 and GPL 2.
  * @see also http://ivaynberg.github.io/select2/
  *
- * 1. allow list style for option items
- * 2. cosmetics: add css class for internal links
- * 3. new parameter to specify initial selected item
- * 4. new parameter for combobox width
-
   SYNTAX:
    <select width guidetext>
      * [[.:page0|title0]]
-   group1
-     * [[.:page1a|title1a]]
-     * [[.:page2b|title1b]]
+   group A
+     *![[.:pageA1|titleA1]]     (default selection)
+     * [[.:pageA2|titleA2]]
+     * titleA3
    </select>
 
    OUTPUT:
    <select>
-     <option >...</option>
-     <optgroup label="group1">
-       <option >...</option>
-       <option >...</option>
+     <option>guidetext</option>
+     <option>title0</option>
+     <optgroup label="group A">
+       <option selected="selected">titleA1</option>
+       <option>titleA2</option>
+       <option disabled="disabled">titleA3</option>
      </optgroup>
    </select>
 
@@ -51,84 +50,90 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
     public function handle($match, $state, $pos) {
         global $ID;
 
-        $match = substr($match, 7, -9);  // strip markup
+        if (preg_match('/^<select2 /',$match)) {
+            // markup was <select2 ...>...</select2>
+            $param['useSelect2'] = true;
+            $match = substr($match, 8, -10);  // strip markup
+        } else {
+            // markup was <select ...>...</select>
+            $match = substr($match, 7, -9);  // strip markup
+        }
         list($params, $match) = explode('>', $match, 2);
         $items = explode("\n", trim($match,"\n"));
 
         // parameters for select tag
         $tokens = preg_split('/\s+/', $params);
-        $params = array();
-        $params['size'] = 1; // <select size="1"></select>
+        $param = array();
+        $param['size'] = 1; // <select size="1"></select>
+        if (empty($param['useSelect2']) {
+            $param['useSelect2'] = $this->getConf('force_select2');
+        }
+
         foreach ($tokens as $token) {
 
-            if (preg_match('/^s=(\d+)/',$token,$matches)){
-            // default selection
-                if ($matches[1] < count($items)-1)
-                    $params['default'] = $matches[1];
-                continue;
-            } elseif (preg_match('/^2/',$token,$matches)) {
-                // markup was <select2 ...>  </select>
-                $params['useSelect2'] = true;
-                continue;
-            } elseif (preg_match('/^(\d+(px)?)\s*([,]\s*(\d+(px)?))?/',$token,$matches)){
+            if (preg_match('/^(\d+(px)?)\s*([,]\s*(\d+(px)?))?/',$token,$matches)){
             // width and width_Blur
                 if ($matches[4]) {
                     // width and width_Blur was given
-                    $params['width'] = $matches[1];
-                    if (!$matches[2]) $params['width'].= 'px';
-                    $params['width_Blur'] = $matches[4];
-                    if (!$matches[5]) $params['width_Blur'].= 'px';
+                    $param['width'] = $matches[1];
+                    if (!$matches[2]) $param['width'].= 'px';
+                    $param['width_Blur'] = $matches[4];
+                    if (!$matches[5]) $param['width_Blur'].= 'px';
                     continue;
                 } elseif ($matches[2]) {
                     // only width was given
-                    $params['width'] = $matches[1];
-                    if (!$matches[2]) $params['width'].= 'px';
+                    $param['width'] = $matches[1];
+                    if (!$matches[2]) $param['width'].= 'px';
                     continue;
                 }
             }
             // unmatched tokens constitute message
             $message.= (empty($message) ? '' : ' ').$token;
         }
-        // register message as option
-        $optgroup_id = 0;
+        // register message as first option
+        $optgroup = 0;
         $option[] = array(
-                'optgroup_id' => $optgroup_id,   // group 0 memeber will not grouped.
-                'id'    => '',
-                'title' => empty($message) ? $this->getLang('guidance_msg') : $message,
-                'attr'  => empty($params['default']) ? '' : 'disabled',
+                'group'    => $optgroup,   // group 0 memeber will not grouped.
+                'id'       => '',
+                'title'    => empty($message) ? $this->getLang('guidance_msg') : $message,
+                'selected' => false,
+                'disabled' => false,
             );
 
         // options to be selected
         for ($i = 0; $i < count($items); $i++) {
+            $selected = false;
+            $disabled = false;
             if (empty($items[$i])) continue;
-//msg('handle optgroup='.$optgroup_id, 0);
+
             // check whether item is list
             if ( !preg_match('/( {2,}|\t{1,})\*/', $items[$i])) {
-                // optgroup
-                // リストでないものが出てきたら、グループをつくる。グループ0はグループ化しない。
-                $optgroup_id++;
-                $optgroup_label[$optgroup_id] = trim($items[$i]);
+                // new optgroup
+                // optgroup 0 member will not grouped
+                $optgroup++;
+                $optgroup_label[$optgroup] = trim($items[$i]);
             } else {
                 // option
-                if (preg_match('/\[\[(.+?)\]\]/', $items[$i], $match)) {
+                if (preg_match('/(.)\[\[(.+?)\]\]/', $items[$i], $match)) {
                     // link option
-                    list($id,$title) = explode('|', $match[1], 2);
-                    $attr  = '';
+                    list($id, $title) = explode('|', $match[2], 2);
+                    if($match[1] == '!') $selected = true;
                 } else {
                     // disabled option (it is text, not link item)
                     $id = '';
                     $title = explode('*', $items[$i])[1];
-                    $attr  = 'disabled';
+                    $disabled = true;
                 }
                 $option[] = array(
-                    'optgroup_id' => $optgroup_id,
-                    'id'    => $id,
-                    'title' => $title,
-                    'attr'  => $attr,
+                    'group'    => $optgroup,
+                    'id'       => $id,
+                    'title'    => $title,
+                    'selected' => false,
+                    'disabled' => false,
                 );
             }
         }
-        return array($params, $optgroup_label, $option);
+        return array($param, $optgroup_label, $option);
     }
 
     /**
@@ -137,36 +142,32 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
     public function render($mode, &$renderer, $data) {
         global $ID, $conf;
 
-        list($params, $optgroup_label, $options) = $data;
+        list($param, $optgroup_label, $options) = $data;
 
         if($mode == 'xhtml'){
             $html = '<form class="dw_pl_select">'.NL;
             $html.= '<select';
-            $html.= ($params['useSelect2']) ? ' class="select_menu"' : '';
+            $html.= ($param['useSelect2']) ? ' class="select_menu"' : '';
             $html.= ' onChange="javascript:plugin_select_jump(this)"';
-            if (!empty($params['width'])) {
-                $html.= ' style="width:'.$params['width'].';"';
-                $html.= ' onFocus="this.style.width='."'".$params['width']."'".'"';
+            if (!empty($param['width'])) {
+                $html.= ' style="width:'.$param['width'].';"';
+                $html.= ' onFocus="this.style.width='."'".$param['width']."'".'"';
             }
-            if (!empty($params['width_onBlur'])) {
-                $html.= ' onBlur="this.style.width='."'".$params['width_onBlur']."'".'"';
+            if (!empty($param['width_onBlur'])) {
+                $html.= ' onBlur="this.style.width='."'".$param['width_onBlur']."'".'"';
             }
             $html.= '>'.NL;
 
             // loop for each option item
-            $optgroup_id = 0;
+            $optgroup = 0;
             foreach($options as $option){
                 // optgroup
-//msg('i='.$optgroup_id.' option[optgroup]='.$option['optgroup_id'], 0);
-                if ($option['optgroup_id'] !== $optgroup_id) {
-                    // グループが変わったら…
-                    if ($option['optgroup_id'] > 1) {
-                        //グループ0はグループかされていない。グループ1の場合は前のグループを閉じる必要はない
-                        $html.= '</optgroup>'.NL;
-//msg('closed',0);
-                    }
-                    $optgroup_id = $option['optgroup_id'];
-                    $html.= '<optgroup label="'.$optgroup_label[$option['optgroup_id']].'">'.NL;
+                if ($option['group'] !== $optgroup) { // optgroup changed
+                    // optgroup 0 member will not grouped
+                    // do not need to close optgroup tag if new group is 1
+                    $html.= ($option['group'] > 1) ? '</optgroup>'.NL : '';
+                    $html.= '<optgroup label="'.$optgroup_label[$option['group']].'">'.NL;
+                    $optgroup = $option['group'];
                 }
 
                 // The following code is partly identical to
@@ -201,7 +202,9 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
                 }
 
                 // output option element
-                $html.= '<option'. (empty($option['attr']) ? '' : ' '.$option['attr']);
+                $html.= '<option';
+                $html.= ($option['selected']) ? ' selected="selected"' : '';
+                $html.= ($option['disabled']) ? ' disabled="disabled"' : '';
                 $html.= ' value="'.$target.'|'.hsc($url).'"';
                 $html.= ' title="'.(isset($exists) ? $option['id'] : hsc($url)).'"';
                 $html.= ($exists === true)  ? ' class="wikilink1"' : '';
@@ -211,7 +214,7 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
                 $html.= '</option>'.NL;
                 unset($exists);
             }
-            if ($optgroup_id > 1) $html.= '</optgroup>'.NL;
+            if ($optgroup > 1) $html.= '</optgroup>'.NL;
             $html.= '</select>'.NL;
             $html.= '</form>'.NL;
 
@@ -222,4 +225,3 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
     }
 
 }
-
