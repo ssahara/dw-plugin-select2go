@@ -71,7 +71,7 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
 
         foreach ($tokens as $token) {
 
-            if (preg_match('/^(\d+(px)?)\s*([,]\s*(\d+(px)?))?/',$token,$matches)){
+            if (preg_match('/^(\d+(px|%)?)\s*([,]\s*(\d+(px|%)?))?/',$token,$matches)){
             // width and width_Blur
                 if ($matches[4]) {
                     // width and width_Blur was given

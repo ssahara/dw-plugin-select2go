@@ -4,4 +4,4 @@
  * used in the configuration manager
  */
 
-$lang['force_select2'] = "select タグに jQuery Select2 を適用する";
+$lang['force_select2'] = "select シンタックスにも jQuery Select2 を適用する";
