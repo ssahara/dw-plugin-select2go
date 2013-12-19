@@ -1,23 +1,23 @@
 /**
- * Select plugin CSS
+ * DokuWiki Plugin Select2 CSS
  */
 
-form.dw_pl_select option:first-child {
+form.plugin_select2 option:first-child {
     color: grey;
 }
-form.dw_pl_select optgroup {
+form.plugin_select2 optgroup {
     background-color: #dcdcdc;
 }
-form.dw_pl_select option {
+form.plugin_select2 option {
     color: #2b73b7;
 }
-form.dw_pl_select option.wikilink1 {
+form.plugin_select2 option.wikilink1 {
     color: #080;
 }
-form.dw_pl_select option.wikilink2 {
+form.plugin_select2 option.wikilink2 {
     color: #d30;
 }
-form.dw_pl_select option:disabled {
+form.plugin_select2 option:disabled {
     color: gray;
 }
 

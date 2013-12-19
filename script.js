@@ -1,6 +1,6 @@
 /* DOKUWIKI:include_once select2.min.js */
 
-function plugin_select_jump(item){
+function plugin_select2_jump(item){
    var token = item.value.split("|");
    if(token[0] == ''){
    	   location.href = token[1];
