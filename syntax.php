@@ -84,7 +84,7 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
         }
 
         // options in select box
-        $items = explode("\n", trim($match));
+        $items = explode("\n", trim($match,"\n"));
         $pattern = '/( {2,}|\t{1,})\*/';
         if (!preg_match($pattern, $match)) $legacy_syntax = true;
 
