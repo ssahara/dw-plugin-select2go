@@ -37,21 +37,19 @@
 
  */
 if(!defined('DOKU_INC')) die();
-if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
-require_once(DOKU_PLUGIN.'syntax.php');
 
 class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
     public function getType() { return 'substition';}
     public function getPType() { return 'block';}
     public function getSort(){return 168;}
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('<select.+?</select>', $mode, 'plugin_select2');
+        $this->Lexer->addSpecialPattern('<select\b.+?</select>', $mode, 'plugin_select2');
     }
 
     /**
      * Handle the match
      */
-    public function handle($match, $state, $pos) {
+    public function handle($match, $state, $pos, Doku_Handler $handler) {
         global $ID;
 
         $match = substr($match, 7, -9);  // strip markup
@@ -138,12 +136,12 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    public function render($mode, &$renderer, $data) {
+    public function render($format, Doku_Renderer $renderer, $data) {
         global $ID, $conf;
 
         list($param, $items) = $data;
 
-        if($mode == 'xhtml'){
+        if($format == 'xhtml'){
             $html = '<form class="plugin_select2">'.NL;
             $html.= '<select';
             $html.= ($param['useSelect2']) ? ' class="select_menu"' : '';
