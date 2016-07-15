@@ -10,10 +10,9 @@
  * DokuWiki Select2 plugin is based on Select plugin by Ikuo Obataya
  * @see also https://www.dokuwiki.org/plugin:select
  * 
- * Select2 is a jQuery based replacement for select boxes
- * coded by Igor Vaynberg.
- * Licenced under the Apache Software Foundation License v2.0 and GPL 2.
- * @see also http://ivaynberg.github.io/select2/
+ * Select2 is a jQuery replacement for select boxes,
+ * which is Licenced under the MIT License (MIT)
+ * @see also https://select2.github.io/
  *
   SYNTAX:
    <select width msg="message">
@@ -39,6 +38,7 @@
 if(!defined('DOKU_INC')) die();
 
 class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
+
     public function getType() { return 'substition';}
     public function getPType() { return 'block';}
     public function getSort(){return 168;}
@@ -142,18 +142,17 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
         list($param, $items) = $data;
 
         if($format == 'xhtml'){
-            $html = '<form class="plugin_select2">'.NL;
-            $html.= '<select';
-            $html.= ($param['useSelect2']) ? ' class="select_menu"' : '';
-            $html.= ' onChange="javascript:plugin_select2_jump(this)"';
+            $html  = '<select';
+            $html .= ($param['useSelect2']) ? ' class="select_menu"' : '';
+            $html .= ' onChange="javascript:plugin_select2_jump(this)"';
             if (array_key_exists('width',$param)) {
-                $html.= ' style="width:'.$param['width'].';"';
+                $html .= ' style="width:'.$param['width'].';"';
             }
             if (array_key_exists('width_onFocus',$param)) {
-                $html.= ' onFocus="this.style.width='."'".$param['width_onFocus']."'".'"';
-                $html.= ' onBlur="this.style.width='."'".$param['width']."'".'"';
+                $html .= ' onFocus="this.style.width='."'".$param['width_onFocus']."'".'"';
+                $html .= ' onBlur="this.style.width='."'".$param['width']."'".'"';
             }
-            $html.= '>'.NL;
+            $html .= '>'.DOKU_LF;
 
             // loop for each option item
             $optgroup = 0;
@@ -162,8 +161,8 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
                 if ($entry['tag'] == 'optgroup') { // optgroup changed
                     // optgroup 0 member will not grouped
                     // do not need to close optgroup tag if new group is 1
-                    $html.= ($entry['group'] > 1) ? '</optgroup>'.NL : '';
-                    $html.= '<optgroup label="'.$entry['title'].'">'.NL;
+                    $html .= ($entry['group'] > 1) ? '</optgroup>'.DOKU_LF : '';
+                    $html .= '<optgroup label="'.$entry['title'].'">'.DOKU_LF;
                     $optgroup = $entry['group'];
                     continue;
                 }
@@ -202,23 +201,22 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
                 }
 
                 // output option element
-                $html.= '<option';
-                $html.= ($entry['selected']) ? ' selected="selected"' : '';
-                $html.= ($entry['disabled']) ? ' disabled="disabled"' : '';
-                $html.= ' value="'.$target.'|'.hsc($url).'"';
-                $html.= ' title="'.(isset($exists) ? $entry['id'] : hsc($url)).'"';
-                $html.= ($exists === true)  ? ' class="wikilink1"' : '';
-                $html.= ($exists === false) ? ' class="wikilink2"' : '';
-                $html.= '>';
-                $html.= empty($entry['title']) ? $entry['id'] : hsc($entry['title']);
-                $html.= '</option>'.NL;
+                $html .= '<option';
+                $html .= ($entry['selected']) ? ' selected="selected"' : '';
+                $html .= ($entry['disabled']) ? ' disabled="disabled"' : '';
+                $html .= ' value="'.$target.'|'.hsc($url).'"';
+                $html .= ' title="'.(isset($exists) ? $entry['id'] : hsc($url)).'"';
+                $html .= ($exists === true)  ? ' class="wikilink1"' : '';
+                $html .= ($exists === false) ? ' class="wikilink2"' : '';
+                $html .= '>';
+                $html .= empty($entry['title']) ? $entry['id'] : hsc($entry['title']);
+                $html .= '</option>'.DOKU_LF;
                 unset($exists);
             }
-            if ($optgroup > 1) $html.= '</optgroup>'.NL;
-            $html.= '</select>'.NL;
-            $html.= '</form>'.NL;
+            if ($optgroup > 1) $html .= '</optgroup>'.DOKU_LF;
+            $html .= '</select>'.DOKU_LF;
 
-            $renderer->doc.=$html;
+            $renderer->doc .=$html;
             return true;
         }
         return false;
