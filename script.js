@@ -1,5 +1,5 @@
 /**
- * DokuWiki Select2 plugin
+ * DokuWiki Select2Go plugin
  */
 
 jQuery(function() {

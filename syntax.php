@@ -1,16 +1,16 @@
 <?php
 /**
- * DokuWiki Select2 plugin (Syntax Component)
+ * DokuWiki Select2Go plugin (Syntax Component)
  *
  * Page/link menu select box enhanced by jQuery Select2
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Ikuo Obataya <I.Obataya@gmail.com>
  * @author  Satoshi Sahara <sahara.satoshi@gmail.com>
  *
- * DokuWiki Select2 plugin is based on Select plugin by Ikuo Obataya
+ * DokuWiki Select2Go plugin is based on Select plugin by Ikuo Obataya
  * @see also https://www.dokuwiki.org/plugin:select
  * 
- * Select2 is a jQuery replacement for select boxes,
+ * Select2 is a jQuery-based replacement for select boxes,
  * which is Licenced under the MIT License (MIT)
  * @see also https://select2.github.io/
  *

@@ -1,7 +1,7 @@
-base   select2
+base   select2go
 author Satoshi Sahara
 email  sahara.satoshi@gmail.com
 date   2016-07-15
-name   Select2 plugin
+name   Select2Go plugin
 desc   Page menu select box enhanced by jQuery Select2
-url    https://github.com/ssahara/dw-plugin-select2
+url    https://github.com/ssahara/dw-plugin-select2go

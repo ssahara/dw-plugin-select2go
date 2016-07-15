@@ -1,6 +1,6 @@
 <?php
 /**
- * English language file for DokuWiki Plugin Select2
+ * English language file for DokuWiki Plugin Select2Go
  * used in the configuration manager
  */
 
