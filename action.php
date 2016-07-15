@@ -32,13 +32,13 @@ class action_plugin_select2 extends DokuWiki_Action_Plugin {
         $event->data['script'][] = array(
             'type'    => 'text/javascript',
             'charset' => 'utf-8',
-            'src'     => 'select2/js/select2.min.js',
+            'src'     => DOKU_REL.'lib/plugins/select2/select2/js/select2.min.js',
             '_data'   => '',
         );
         $event->data['link'][] = array(
             'rel'     => 'stylesheet',
             'type'    => 'text/css',
-            'href'    => 'select2/css/select2.min.css',
+            'href'    => DOKU_REL.'lib/plugins/select2/select2/css/select2.min.css',
         );
     }
 
