@@ -1,7 +1,7 @@
 base   select2
 author Satoshi Sahara
 email  sahara.satoshi@gmail.com
-date   2016-07-14
+date   2016-07-15
 name   Select2 plugin
 desc   Page menu select box enhanced by jQuery Select2
 url    https://github.com/ssahara/dw-plugin-select2
