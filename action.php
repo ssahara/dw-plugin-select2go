@@ -17,7 +17,7 @@
  */
 if(!defined('DOKU_INC')) die();
 
-class action_plugin_select2 extends DokuWiki_Action_Plugin {
+class action_plugin_select2go extends DokuWiki_Action_Plugin {
 
     // register hook
     public function register(Doku_Event_Handler $controller) {
@@ -32,13 +32,13 @@ class action_plugin_select2 extends DokuWiki_Action_Plugin {
         $event->data['script'][] = array(
             'type'    => 'text/javascript',
             'charset' => 'utf-8',
-            'src'     => DOKU_REL.'lib/plugins/select2/select2/js/select2.min.js',
+            'src'     => DOKU_REL.'lib/plugins/select2go/select2/js/select2.min.js',
             '_data'   => '',
         );
         $event->data['link'][] = array(
             'rel'     => 'stylesheet',
             'type'    => 'text/css',
-            'href'    => DOKU_REL.'lib/plugins/select2/select2/css/select2.min.css',
+            'href'    => DOKU_REL.'lib/plugins/select2go/select2/css/select2.min.css',
         );
     }
 

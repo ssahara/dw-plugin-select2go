@@ -37,13 +37,13 @@
  */
 if(!defined('DOKU_INC')) die();
 
-class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
 
     public function getType() { return 'substition';}
     public function getPType() { return 'block';}
     public function getSort(){return 168;}
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('<select\b.+?</select>', $mode, 'plugin_select2');
+        $this->Lexer->addSpecialPattern('<select\b.+?</select>', $mode, 'plugin_select2go');
     }
 
     /**
@@ -144,7 +144,6 @@ class syntax_plugin_select2 extends DokuWiki_Syntax_Plugin {
         if($format == 'xhtml'){
             $html  = '<select';
             $html .= ($param['useSelect2']) ? ' class="select_menu"' : '';
-            $html .= ' onChange="javascript:plugin_select2_jump(this)"';
             if (array_key_exists('width',$param)) {
                 $html .= ' style="width:'.$param['width'].';"';
             }
