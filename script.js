@@ -12,7 +12,7 @@ jQuery(function() {
     });
 
     // jump when changed
-    jQuery('select.select_menu').changed(function() {
+    jQuery('select.select_menu').change(function() {
         var token = jQuery(this).val().split("|");
         if (token[0] == '') {
             location.href = token[1];
