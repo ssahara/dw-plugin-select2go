@@ -205,8 +205,11 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
                 $html .= ($entry['disabled']) ? ' disabled="disabled"' : '';
                 $html .= ' value="'.$target.'|'.hsc($url).'"';
                 $html .= ' title="'.(isset($exists) ? $entry['id'] : hsc($url)).'"';
-                $html .= ($exists === true)  ? ' class="wikilink1"' : '';
-                $html .= ($exists === false) ? ' class="wikilink2"' : '';
+                if (isset($exists)) {
+                    $html .= ' class="';
+                    $html .= ($exists) ? 'wikilink1' : 'wikilink2';
+                    $html .= '"';
+                }
                 $html .= '>';
                 $html .= empty($entry['title']) ? $entry['id'] : hsc($entry['title']);
                 $html .= '</option>'.DOKU_LF;
