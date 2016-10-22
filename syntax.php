@@ -56,11 +56,14 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
         list($params, $match) = explode('>', $match, 2);
 
         // parameters for select tag
-        $param = $this->getArguments($params, 'width');
-        $param['size'] = 1; // <select size="1"></select>
+        $param = $this->getArguments($params);
         if (!array_key_exists('useSelect2', $param)) {
             $param['useSelect2'] = $this->getConf('force_select2');
         }
+        if (array_key_exists('size', $param) && !array_key_exists('width', $param)) {
+            $param['width'] = $param['size'];
+        }
+        $param['size'] = 1; // <select size="1"></select>
         if (array_key_exists('height', $param)) {
             $param['width_onFocus'] = $param['height'];
             unset($param['height']);
@@ -231,17 +234,18 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
      * Named arguments is to be given as key="value" (quoted).
      * Non-named arguments is assumed as boolean.
      *
-     * @param $args (string) arguments
-     * @param $singlekey (string) key name if single numeric value was given
-     * @return (array) parsed arguments in $arg['key']=value
+     * @param string $args   arguments
+     * @return array     parsed arguments in $arg['key']=value
      * ---------------------------------------------------------
      */
-    protected function getArguments($args='', $singlekey='height') {
+    function getArguments($args='') {
         $arg = array();
+        if (empty($args)) return $arg;
+
         // get named arguments (key="value"), ex: width="100"
         // value must be quoted in argument string.
         $val = "([\"'`])(?:[^\\\\\"'`]|\\\\.)*\g{-1}";
-        $pattern = "/(\w+)\s*=\s*($val)/";
+        $pattern = "/\b(\w+)=($val) ?/";
         preg_match_all($pattern, $args, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $arg[$match[1]] = substr($match[2], 1, -1); // drop quates from value string
@@ -251,38 +255,36 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
         // get named numeric value argument, ex width=100
         // numeric value may not be quoted in argument string.
         $val = '\d+';
-        $pattern = "/(\w+)\s*=\s*($val)/";
+        $pattern = "/\b(\w+)=($val) ?/";
         preg_match_all($pattern, $args, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $arg[$match[1]] = (int)$match[2];
             $args = str_replace($match[0], '', $args); // remove parsed substring
         }
 
-        // get width and/or height, specified as non-named arguments
-        $unit = 'px';
-        $pattern = '/(?:^| )(\d+(%|em|pt|px)?)\s*([,xX]?(\d+(%|em|pt|px)?))?(?: |$)/';
-        if (preg_match($pattern, $args, $matches)) {
-            if ($matches[4]) {
-                // width and height with unit was given
-                $arg['width'] = $matches[1];
-                if (!$matches[2]) $arg['width'].= $unit;
-                $arg['height'] = $matches[4];
-                if (!$matches[5]) $arg['height'].= $unit;
-            } elseif ($matches[2]) {
-                // width or height(=assumed as default) with unit was given
-                // preferred key name given as second parameter of this function
-                $arg[$singlekey] = $matches[1];
-                if (!$matches[2]) $arg[$singlekey].= $unit;
-            } elseif ($matches[1]) {
-                // numeric token is assumed as width or height
-                $arg[$singlekey] = $matches[1].$unit;
-            }
-            $args = str_replace($matches[0], '', $args); // remove parsed substring
-        }
-
-        // get flags or non-named arguments, ex: showdate, no-showfooter
+        // get non-named arguments
         $tokens = preg_split('/\s+/', $args);
         foreach ($tokens as $token) {
+
+            // get size parameters specified as non-named arguments
+            // assume as single size or eles width and height pair
+            //  ex: 85% |  256x256 | 800,600px | 85%,300px
+            $pattern = '/(\d+(\%|em|pt|px)?)(?:[,xX]?(\d+(\%|em|pt|px)?))?$/';
+            if (preg_match($pattern, $token, $matches)) {
+                //error_log('helper matches: '.count($matches).' '.var_export($matches, 1));
+                if ((count($matches) > 4) && empty($matches[2])) {
+                    $matches[2] = $matches[4];
+                    $matches[1] = $matches[1].$matches[4];
+                }
+                if (count($matches) > 3) {
+                    $arg['width']  = $matches[1];
+                    $arg['height'] = $matches[3];
+                } else {
+                    $arg['size'] = $matches[1];
+                }
+            }
+
+            // get flags, ex: showdate, noshowfooter
             if (preg_match('/^(?:!|not?)(.+)/',$token, $matches)) {
                 // denyed/negative prefixed token
                 $arg[$matches[1]] = false;
