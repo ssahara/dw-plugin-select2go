@@ -14,36 +14,43 @@
  * which is Licenced under the MIT License (MIT)
  * @see also https://select2.github.io/
  *
-  SYNTAX:
-   <select width msg="message">
-     * [[.:page0|title0]]
-   group A
-     *![[.:pageA1|titleA1]]     (default selection)
-     * [[.:pageA2|titleA2]]
-     * titleA3
-   </select>
-
-   OUTPUT:
-   <select onchange="javascript:plugin_select2_jump(this)">
-     <option>message</option>
-     <option>title0</option>
-     <optgroup label="group A">
-       <option selected="selected">titleA1</option>
-       <option>titleA2</option>
-       <option disabled="disabled">titleA3</option>
-     </optgroup>
-   </select>
-
+ * SYNTAX:
+ *   <select width msg="message, please choose">
+ *     * [[.:page0|title0]]
+ *   group A
+ *     *![[.:pageA1|titleA1]]     (default selection)
+ *     * [[.:pageA2|titleA2]]
+ *     * titleA3
+ *   </select>
+ *
+ * OUTPUT:
+ *   <select onchange="javascript:plugin_select2_jump(this)">
+ *     <option>message, please choose</option>
+ *     <option>title0</option>
+ *     <optgroup label="group A">
+ *       <option selected="selected">titleA1</option>
+ *       <option>titleA2</option>
+ *       <option disabled="disabled">titleA3</option>
+ *     </optgroup>
+ *   </select>
+ *
  */
 if(!defined('DOKU_INC')) die();
 
 class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
 
+    protected $pattern = '<select\b.+?</select>';
+    protected $mode = 'plugin_select2go';
+
     public function getType() { return 'substition';}
     public function getPType() { return 'block';}
     public function getSort(){return 168;}
+
+    /**
+     * Connect pattern to lexer
+     */
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('<select\b.+?</select>', $mode, 'plugin_select2go');
+        $this->Lexer->addSpecialPattern($this->pattern, $mode, $this->mode);
     }
 
     /**
