@@ -36,6 +36,8 @@
  *
  */
 
+use dokuwiki\File\PageResolver;
+
 class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin
 {
     protected $pattern = '<select\b.+?</select>';
@@ -206,15 +208,22 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin
                     $target = $conf['target']['wiki'];
                 } else {
                 // internal link
-                    resolve_pageid(getNS($ID),$entry['id'],$exists);
+                    if (class_exists('dokuwiki\File\PageResolver')) {
+                        // DW 2022-07-31 and later
+                        $Resolver = new PageResolver(getNS($ID));
+                        $entry['id'] = $Resolver->resolveId($entry['id']);
+                        $exists = page_exists($entry['id']);
+                    } else {
+                        resolve_pageid(getNS($ID),$entry['id'],$exists);
+                    }
                     $url = wl($entry['id']);
                     $target = $conf['target']['wiki'];
                 }
 
                 // output option element
                 $html .= '<option';
-                $html .= ($entry['selected']) ? ' selected="selected"' : '';
-                $html .= ($entry['disabled']) ? ' disabled="disabled"' : '';
+                $html .= (!empty($entry['selected'])) ? ' selected="selected"' : '';
+                $html .= (!empty($entry['disabled'])) ? ' disabled="disabled"' : '';
                 $html .= ' value="'.$target.'|'.hsc($url).'"';
                 $html .= ' title="'.(isset($exists) ? $entry['id'] : hsc($url)).'"';
                 if (isset($exists)) {
