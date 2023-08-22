@@ -35,10 +35,9 @@
  *   </select>
  *
  */
-if(!defined('DOKU_INC')) die();
 
-class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
-
+class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin
+{
     protected $pattern = '<select\b.+?</select>';
     protected $mode = 'plugin_select2go';
 
@@ -49,14 +48,16 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
     /**
      * Connect pattern to lexer
      */
-    public function connectTo($mode) {
+    public function connectTo($mode)
+    {
         $this->Lexer->addSpecialPattern($this->pattern, $mode, $this->mode);
     }
 
     /**
      * Handle the match
      */
-    public function handle($match, $state, $pos, Doku_Handler $handler) {
+    public function handle($match, $state, $pos, Doku_Handler $handler)
+    {
         global $ID;
 
         $match = substr($match, 7, -9);  // strip markup
@@ -102,10 +103,10 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
             if (empty($items[$i])) continue;
 
             // check whether item is list
-            if ( !preg_match('/( {2,}|\t{1,})\*/', $items[$i])) {
+            if (!preg_match('/( {2,}|\t{1,})\*/', $items[$i])) {
                 if ($legacy_syntax) {
                 // option given in legacy syntax
-                    list($id,$title) = explode('|', trim($items[$i]), 2);
+                    list($id, $title) = explode('|', trim($items[$i]), 2);
                     if (empty($title)) $title = $id;
                     $entry[] = array( 'tag'=>'option', 'group'=>$optgroup,
                                       'id'=>$id, 'title'=>$title);
@@ -123,7 +124,7 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
                 if (preg_match('/(.)\[\[(.+?)\]\]/', $items[$i], $match)) {
                     // link item
                     list($id, $title) = explode('|', $match[2], 2);
-                    if($match[1] == '!') $selected = true;
+                    if ($match[1] == '!') $selected = true;
                 } else {
                     // text item (disabled option)
                     $id = '';
@@ -146,12 +147,13 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    public function render($format, Doku_Renderer $renderer, $data) {
+    public function render($format, Doku_Renderer $renderer, $data)
+    {
         global $ID, $conf;
 
         list($param, $items) = $data;
 
-        if($format == 'xhtml'){
+        if ($format == 'xhtml') {
             $html  = '<select';
             $html .= ($param['useSelect2']) ? ' class="select_menu"' : '';
             if (array_key_exists('width',$param)) {
@@ -165,7 +167,7 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
 
             // loop for each option item
             $optgroup = 0;
-            foreach($items as $entry){
+            foreach ($items as $entry) {
                 // optgroup tag
                 if ($entry['tag'] == 'optgroup') { // optgroup changed
                     // optgroup 0 member will not grouped
@@ -184,25 +186,25 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
                 if (empty($entry['id'])) { // disabled option
                     $url = '';
                     $target = '';
-                } elseif ( preg_match('/^[a-zA-Z\.]+>{1}.*$/u',$entry['id']) ) {
+                } elseif (preg_match('/^[a-zA-Z\.]+>{1}.*$/u',$entry['id'])) {
                 // Interwiki
                     $interwiki = explode('>',$entry['id'],2);
                     $url = $renderer->_resolveInterWiki($interwiki[0],$interwiki[1]);
                     $target = $conf['target']['interwiki'];
-                } elseif ( preg_match('/^\\\\\\\\[^\\\\]+?\\\\/u',$entry['id']) ){
+                } elseif (preg_match('/^\\\\\\\\[^\\\\]+?\\\\/u',$entry['id'])) {
                 // Windows Share
                     $url = $arg1;
                     $target = $conf['target']['windows'];
-                } elseif ( preg_match('#^([a-z0-9\-\.+]+?)://#i',$entry['id']) ){
+                } elseif (preg_match('#^([a-z0-9\-\.+]+?)://#i',$entry['id'])) {
                 // external link (accepts all protocols)
                     $url = $entry['id'];
                     $target = $conf['target']['extern'];
-                } elseif ( preg_match('!^#.+!',$entry['id']) ){
+                } elseif (preg_match('!^#.+!',$entry['id'])) {
                 // local link
                     //$url = substr($entry['id'],1); // strip #
                     $url = $entry['id'];
                     $target = $conf['target']['wiki'];
-                }else{
+                } else {
                 // internal link
                     resolve_pageid(getNS($ID),$entry['id'],$exists);
                     $url = wl($entry['id']);
@@ -245,7 +247,8 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
      * @return array     parsed arguments in $arg['key']=value
      * ---------------------------------------------------------
      */
-    function getArguments($args='') {
+    public function getArguments($args = '')
+    {
         $arg = array();
         if (empty($args)) return $arg;
 
@@ -292,10 +295,10 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin {
             }
 
             // get flags, ex: showdate, noshowfooter
-            if (preg_match('/^(?:!|not?)(.+)/',$token, $matches)) {
+            if (preg_match('/^(?:!|not?)(.+)/', $token, $matches)) {
                 // denyed/negative prefixed token
                 $arg[$matches[1]] = false;
-            } elseif (preg_match('/^[A-Za-z]/',$token)) {
+            } elseif (preg_match('/^[A-Za-z]/', $token)) {
                 $arg[$token] = true;
             }
         }

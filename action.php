@@ -15,10 +15,9 @@
  * @see also https://select2.github.io/
  *
  */
-if(!defined('DOKU_INC')) die();
 
-class action_plugin_select2go extends DokuWiki_Action_Plugin {
-
+class action_plugin_select2go extends DokuWiki_Action_Plugin
+{
     // register hook
     public function register(Doku_Event_Handler $controller) {
         $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, 'load_select2');
@@ -27,8 +26,8 @@ class action_plugin_select2go extends DokuWiki_Action_Plugin {
     /**
      * register Select2 script and css
      */
-    function load_select2(Doku_Event $event, $params) {
-    
+    public function load_select2(Doku_Event $event, $params)
+    {
         $event->data['script'][] = array(
             'type'    => 'text/javascript',
             'charset' => 'utf-8',
