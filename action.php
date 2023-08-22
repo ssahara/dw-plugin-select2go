@@ -32,6 +32,7 @@ class action_plugin_select2go extends DokuWiki_Action_Plugin
             'type'    => 'text/javascript',
             'charset' => 'utf-8',
             'src'     => DOKU_REL.'lib/plugins/select2go/select2/js/select2.min.js',
+            'defer'   => 'defer',
             '_data'   => '',
         );
         $event->data['link'][] = array(
