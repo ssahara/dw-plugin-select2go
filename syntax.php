@@ -108,7 +108,7 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin
             if (!preg_match('/( {2,}|\t{1,})\*/', $items[$i])) {
                 if ($legacy_syntax) {
                 // option given in legacy syntax
-                    list($id, $title) = explode('|', trim($items[$i]), 2);
+                    list($id, $title) = array_pad(explode('|', trim($items[$i]), 2), 2, '');
                     if (empty($title)) $title = $id;
                     $entry[] = array( 'tag'=>'option', 'group'=>$optgroup,
                                       'id'=>$id, 'title'=>$title);
@@ -125,7 +125,7 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin
                 // option
                 if (preg_match('/(.)\[\[(.+?)\]\]/', $items[$i], $match)) {
                     // link item
-                    list($id, $title) = explode('|', $match[2], 2);
+                    list($id, $title) = array_pad(explode('|', $match[2], 2), 2, '');
                     if ($match[1] == '!') $selected = true;
                 } else {
                     // text item (disabled option)
