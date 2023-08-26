@@ -97,7 +97,7 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin
         // options in select box
         $items = explode("\n", trim($match,"\n"));
         $pattern = '/( {2,}|\t{1,})\*/';
-        if (!preg_match($pattern, $match)) $legacy_syntax = true;
+        $is_legacy_syntax = (!preg_match($pattern, $match)) ? true : false;
 
         for ($i = 0; $i < count($items); $i++) {
             $selected = false;
@@ -106,7 +106,7 @@ class syntax_plugin_select2go extends DokuWiki_Syntax_Plugin
 
             // check whether item is list
             if (!preg_match('/( {2,}|\t{1,})\*/', $items[$i])) {
-                if ($legacy_syntax) {
+                if ($is_legacy_syntax) {
                 // option given in legacy syntax
                     list($id, $title) = array_pad(explode('|', trim($items[$i]), 2), 2, '');
                     if (empty($title)) $title = $id;
